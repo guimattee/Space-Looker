@@ -1,5 +1,6 @@
 import pygame
 import tkinter as tk
+import requinter
 
 
 pygame.init()
@@ -20,6 +21,11 @@ posicaoYNave = 350
 movimentoXNave = 0
 movimentoYNave = 0
 pausado = False
+fonteHora = pygame.font.Font(None, 20)
+pontuacao = 0
+fontePontuação = pygame.font.Font(None, 30)
+hora = fonteHora.render(requinter.dataHora(), True, branco)
+
 
 while True:
     for evento in pygame.event.get():
@@ -37,14 +43,7 @@ while True:
                 movimentoYNave = -20
             elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_UP:
                 movimentoYNave = -20
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_RIGHT:
-                movimentoXNave = 20
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_RIGHT:
-                movimentoXNave = 20
-            elif evento.type == pygame.KEYUP and evento.key == pygame.K_LEFT:
-                movimentoXNave = -20
-            elif evento.type == pygame.KEYDOWN and evento.key == pygame.K_LEFT:
-                movimentoXNave = -20
+            
 
 
         if posicaoXNave <= 20:
@@ -57,12 +56,15 @@ while True:
         elif posicaoYNave >= 580:
             posicaoYNave = 580
 
+
+
         if not pausado:
             posicaoXNave = posicaoXNave + movimentoXNave
             posicaoYNave = posicaoYNave + movimentoYNave
 
     tamanhoTela.blit(fundoJogo, (-120,10))
     tamanhoTela.blit(nave, (posicaoXNave, posicaoYNave))
+    tamanhoTela.blit(hora, (10, 10))
 
     if pausado:
         fonte = pygame.font.Font(None, 74)
@@ -74,4 +76,5 @@ while True:
         tamanhoTela.blit(texto2, (300, 320))
 
     pygame.display.update()
+    pygame.display.flip()
     relogio.tick(60)  
