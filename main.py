@@ -23,7 +23,7 @@ movimentoYNave = 0
 pausado = False
 fonteHora = pygame.font.Font(None, 20)
 pontuacao = 0
-fontePontuação = pygame.font.Font(None, 30)
+fontePontuação = pygame.font.Font(None, 35)
 hora = fonteHora.render(requinter.dataHora(), True, branco)
 
 
@@ -65,6 +65,7 @@ while True:
     tamanhoTela.blit(fundoJogo, (-120,10))
     tamanhoTela.blit(nave, (posicaoXNave, posicaoYNave))
     tamanhoTela.blit(hora, (10, 10))
+    tamanhoTela.blit(asteroide, (800, 300))
 
     if pausado:
         fonte = pygame.font.Font(None, 74)
