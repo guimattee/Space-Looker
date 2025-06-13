@@ -8,6 +8,7 @@ pygame.display.set_caption("Space Looker")
 fundoJogo = pygame.image.load("imagens/fundoJogo.jpg")
 nave = pygame.image.load("imagens/nave.png")
 icone = pygame.image.load("imagens/icone.png")
+tiro = pygame.image.load("imagens/tiro.png")
 pygame.display.set_icon(icone)
 asteroide = pygame.image.load("imagens/asteroide.png")
 escalaAsteroide = pygame.transform.scale(asteroide, (55, 55))
@@ -23,6 +24,9 @@ posicaoXNave = 20
 posicaoYNave = 350
 movimentoXNave = 0
 movimentoYNave = 0
+
+tiro = 0
+ultimoTiro = 200
 
 # Múltiplos asteroides
 NUM_ASTEROIDES = 10
@@ -79,6 +83,9 @@ while True:
         elif posicaoYNave >= 580:
             posicaoYNave = 580
 
+        if tiro < ultimoTiro:
+            tiro += 1
+
         # Move e reposiciona asteroides
         for ast in asteroides:
             ast['x'] -= velocidadeAsteroide
@@ -103,7 +110,7 @@ while True:
             escalaAsteroide.get_height() - 16
         )
         if nave_rect.colliderect(asteroide_rect):
-            print("Você foi atingido por um asteroide!")
+            print("Você foi atingido por um asteroide!") #mostrar na tela de morte
             pygame.quit()
             exit()
 
