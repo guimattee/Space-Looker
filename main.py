@@ -11,7 +11,7 @@ icone = pygame.image.load("imagens/icone.png")
 pygame.display.set_icon(icone)
 asteroide = pygame.image.load("imagens/asteroide.png")
 escalaAsteroide = pygame.transform.scale(asteroide, (55, 55))
-velocidadeAsteroide = random.randint(3, 20)
+velocidadeAsteroide = random.randint(3, 8)
 relogio = pygame.time.Clock()
 tela = (1000, 700)
 tamanhoTela = pygame.display.set_mode(tela)
@@ -24,9 +24,13 @@ posicaoYNave = 350
 movimentoXNave = 0
 movimentoYNave = 0
 
-# Posição do asteroide
-posicaoXAster = 1000
-posicaoYAster = random.randint(0, 645)
+# Múltiplos asteroides
+NUM_ASTEROIDES = 10
+asteroides = []
+for _ in range(NUM_ASTEROIDES):
+    x = 1000 + random.randint(0, 500)
+    y = random.randint(0, 645)
+    asteroides.append({'x': x, 'y': y})
 
 # Variáveis do jogo
 pausado = False
@@ -75,26 +79,50 @@ while True:
         elif posicaoYNave >= 580:
             posicaoYNave = 580
 
-        # Move o asteroide
-        posicaoXAster -= velocidadeAsteroide
-        if posicaoXAster < -55:
-            posicaoXAster = 1000
-            posicaoYAster = random.randint(0, 645)
-            velocidadeAsteroide += 2
+        # Move e reposiciona asteroides
+        for ast in asteroides:
+            ast['x'] -= velocidadeAsteroide
+            if ast['x'] < -55:
+                ast['x'] = 1000
+                ast['y'] = random.randint(0, 645)
 
-    # Atualiza os rects para colisão
-    nave_rect = nave.get_rect(topleft=(posicaoXNave, posicaoYNave))
-    asteroide_rect = escalaAsteroide.get_rect(topleft=(posicaoXAster, posicaoYAster))
+    # --- Seção de Colisão ---
+    # Crie a hitbox da nave ANTES do loop de colisão
+    nave_rect = pygame.Rect(
+        posicaoXNave + 8,           # desloca para a direita
+        posicaoYNave + 12,          # desloca para baixo
+        nave.get_width() - 16,      # diminui largura
+        nave.get_height() - 20      # diminui altura
+    )
 
-    # Verifica colisão
-    if nave_rect.colliderect(asteroide_rect):
-        print("Você foi atingido por um asteroide!")
-        break
+    for ast in asteroides:
+        asteroide_rect = pygame.Rect(
+            ast['x'] + 8,
+            ast['y'] + 8,
+            escalaAsteroide.get_width() - 16,
+            escalaAsteroide.get_height() - 16
+        )
+        if nave_rect.colliderect(asteroide_rect):
+            print("Você foi atingido por um asteroide!")
+            pygame.quit()
+            exit()
 
     # --- Seção de Desenho na Tela ---
     tamanhoTela.blit(fundoJogo, (-120, 10))
     tamanhoTela.blit(nave, (posicaoXNave, posicaoYNave))
-    tamanhoTela.blit(escalaAsteroide, (posicaoXAster, posicaoYAster))
+    for ast in asteroides:
+        tamanhoTela.blit(escalaAsteroide, (ast['x'], ast['y']))
+
+    # Se quiser visualizar as hitboxes, descomente abaixo:
+    # pygame.draw.rect(tamanhoTela, (0,255,0), nave_rect, 2)
+    # for ast in asteroides:
+    #     asteroide_rect = pygame.Rect(
+    #         ast['x'] + 8,
+    #         ast['y'] + 8,
+    #         escalaAsteroide.get_width() - 16,
+    #         escalaAsteroide.get_height() - 16
+    #     )
+    #     pygame.draw.rect(tamanhoTela, (255,0,0), asteroide_rect, 2)
 
     # Atualiza e desenha a hora a cada quadro
     hora_atual = datetime.datetime.now().strftime("%d/%m/%y %H:%M:%S")
