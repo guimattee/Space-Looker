@@ -3,6 +3,7 @@ import datetime
 import random
 import pyttsx3  # ADICIONADO PARA VOZ
 import time     # ADICIONADO PARA TIMER
+import threading
 
 pygame.init()
 
@@ -14,13 +15,15 @@ tiro = pygame.image.load("imagens/tiro.png")
 pygame.display.set_icon(icone)
 asteroide = pygame.image.load("imagens/asteroide.png")
 escalaAsteroide = pygame.transform.scale(asteroide, (55, 55))
-velocidadeAsteroide = random.randint(3, 8)
+velocidadeAsteroide = random.randint(3, 6)
 relogio = pygame.time.Clock()
 tela = (1000, 700)
 telaPrincipal = pygame.display.set_mode(tela)
 preto = (0, 0, 0)
 branco = (255, 255, 255)
-roxo = (128, 0, 128)
+roxo = (200, 0, 128)
+cinza = (192, 192, 192)
+vermelho = (255, 0, 0)
 pygame.mixer.music.load("imagens/fundoCerto.mp3")
 pygame.mixer.music.play(-1, 0, 1000000)  # Fade in da música de fundo
 
@@ -37,13 +40,14 @@ def speak(text):
 
 # ...existing code...
 
+# ...existing code...
+
 def tela_inicio():
     fonte = pygame.font.Font(None, 110)  
     fonte2 = pygame.font.Font(None, 36)
     input_box = pygame.Rect(tela[0]//2 - 150, tela[1]//2, 300, 50)
     color_inactive = pygame.Color('lightskyblue3')
     color_active = pygame.Color('dodgerblue2')
-    color = color_inactive
     color = color_active
     active = False
     text = ''
@@ -82,7 +86,13 @@ def tela_inicio():
 
         telaPrincipal.blit(fundoJogo, (0, 0))
 
-        # Pisca o título a cada 500ms
+        # --- FADE TRANSPARENTE SOBRE O FUNDO ---
+        fade = pygame.Surface(tela, pygame.SRCALPHA)
+        fade.fill((0, 0, 0, 180))  # Preto com alpha 180 (0=transparente, 255=opaco)
+        telaPrincipal.blit(fade, (0, 0))
+        # ---------------------------------------
+
+        # Pisca o título a cada 1000ms
         blink_timer += relogio.get_time()
         if blink_timer > blink_interval:
             blink = not blink
@@ -94,10 +104,10 @@ def tela_inicio():
             titulo = fonte.render("Space Looker", True, (60, 0, 60))    # LED apagado
 
         telaPrincipal.blit(titulo, (tela[0]//2 - titulo.get_width()//2, tela[1]//2 - 180))
-        instr = fonte2.render("Digite seu nome:", True, preto)
+        instr = fonte2.render("Digite seu nome:", True, branco)
         telaPrincipal.blit(instr, (tela[0]//2 - instr.get_width()//2, tela[1]//2 - 40))
         pygame.draw.rect(telaPrincipal, preto, input_box, 2)
-        txt_surface = fonte2.render(text, True, preto)
+        txt_surface = fonte2.render(text, True, branco)
         telaPrincipal.blit(txt_surface, (input_box.x+5, input_box.y+10))
         input_box.w = max(300, txt_surface.get_width()+10)
         mouse = pygame.mouse.get_pos()
@@ -108,7 +118,6 @@ def tela_inicio():
         pygame.display.flip()
         relogio.tick(60)
     return nome
-
 
 def tela_intro(nome):
     fonte = pygame.font.Font(None, 48)
@@ -125,6 +134,7 @@ def tela_intro(nome):
     last_tick = time.time()
     # Fala o nome
     speak(f"Bem vindo {nome}")
+
     rodando = True
     while rodando:
         for event in pygame.event.get():
@@ -132,12 +142,19 @@ def tela_intro(nome):
                 pygame.quit()
                 exit()
         telaPrincipal.blit(fundoJogo, (-120, 10))
-        titulo = fonte.render(f"Bem-vindo ao Space Looker, {nome}!", True, branco)
+
+        # --- FADE TRANSPARENTE SOBRE O FUNDO ---
+        fade = pygame.Surface(tela, pygame.SRCALPHA)
+        fade.fill((0, 0, 0, 180))  # Preto com alpha 180 (0=transparente, 255=opaco)
+        telaPrincipal.blit(fade, (0, 0))
+        # ---------------------------------------
+
+        titulo = fonte.render(f"Bem-vindo ao Space Looker, {nome}!", True, roxo)
         telaPrincipal.blit(titulo, (tela[0]//2 - titulo.get_width()//2, 80))
         for i, linha in enumerate(historia):
             texto = fonte2.render(linha, True, branco)
             telaPrincipal.blit(texto, (tela[0]//2 - texto.get_width()//2, 200 + i*40))
-        timer_txt = fonte2.render(f"O jogo começa em {timer} segundos...", True, branco)
+        timer_txt = fonte2.render(f"O jogo começa em {timer} segundos...", True, vermelho)
         telaPrincipal.blit(timer_txt, (tela[0]//2 - timer_txt.get_width()//2, tela[1] - 100))
         pygame.display.flip()
         if time.time() - last_tick >= 1:
@@ -146,6 +163,8 @@ def tela_intro(nome):
         if timer <= 0:
             rodando = False
         relogio.tick(60)
+
+# ...existing code...
 
 # ====== FIM DAS NOVAS FUNÇÕES ======
 
@@ -281,6 +300,7 @@ while True:
                 ast['x'] = 1000
                 ast['y'] = random.randint(0, 675)
                 pontuacao += 1
+                threading.Thread(target=speak, args=( f" {pontuacao} pontos",)).start()
                 break  # Um tiro só pode destruir um asteroide por vez
 
     # --- Seção de Desenho na Tela ---
