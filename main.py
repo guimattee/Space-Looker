@@ -1,6 +1,8 @@
 import pygame
 import datetime
 import random
+import pyttsx3  # ADICIONADO PARA VOZ
+import time     # ADICIONADO PARA TIMER
 
 pygame.init()
 
@@ -18,6 +20,140 @@ tela = (1000, 700)
 telaPrincipal = pygame.display.set_mode(tela)
 preto = (0, 0, 0)
 branco = (255, 255, 255)
+roxo = (128, 0, 128)
+pygame.mixer.music.load("imagens/fundoCerto.mp3")
+pygame.mixer.music.play(-1, 0, 1000000)  # Fade in da música de fundo
+
+
+# ====== NOVAS FUNÇÕES E VARIÁVEIS ======
+def speak(text):
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 150)
+        engine.say(text)
+        engine.runAndWait()
+    except Exception as e:
+        print("Erro ao falar:", e)
+
+# ...existing code...
+
+def tela_inicio():
+    fonte = pygame.font.Font(None, 110)  
+    fonte2 = pygame.font.Font(None, 36)
+    input_box = pygame.Rect(tela[0]//2 - 150, tela[1]//2, 300, 50)
+    color_inactive = pygame.Color('lightskyblue3')
+    color_active = pygame.Color('dodgerblue2')
+    color = color_inactive
+    color = color_active
+    active = False
+    text = ''
+    botao_rect = pygame.Rect(tela[0]//2 - 75, tela[1]//2 + 80, 150, 50)
+    botao_color = (128, 0, 180)
+    botao_hover = (255, 255, 255)
+    rodando = True
+    nome = ''
+    blink = True
+    blink_timer = 0
+    blink_interval = 1000  # ms
+
+    while rodando:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if input_box.collidepoint(event.pos):
+                    active = True
+                else:
+                    active = False
+                if botao_rect.collidepoint(event.pos):
+                    nome = text.strip() if text.strip() else "Jogador"
+                    rodando = False
+            if event.type == pygame.KEYDOWN:
+                if active:
+                    if event.key == pygame.K_RETURN:
+                        nome = text.strip() if text.strip() else "Jogador"
+                        rodando = False
+                    elif event.key == pygame.K_BACKSPACE:
+                        text = text[:-1]
+                    else:
+                        if len(text) < 15:
+                            text += event.unicode
+
+        telaPrincipal.blit(fundoJogo, (0, 0))
+
+        # Pisca o título a cada 500ms
+        blink_timer += relogio.get_time()
+        if blink_timer > blink_interval:
+            blink = not blink
+            blink_timer = 0
+
+        if blink:
+            titulo = fonte.render("Space Looker", True, (255, 0, 255))  # LED aceso
+        else:
+            titulo = fonte.render("Space Looker", True, (60, 0, 60))    # LED apagado
+
+        telaPrincipal.blit(titulo, (tela[0]//2 - titulo.get_width()//2, tela[1]//2 - 180))
+        instr = fonte2.render("Digite seu nome:", True, preto)
+        telaPrincipal.blit(instr, (tela[0]//2 - instr.get_width()//2, tela[1]//2 - 40))
+        pygame.draw.rect(telaPrincipal, preto, input_box, 2)
+        txt_surface = fonte2.render(text, True, preto)
+        telaPrincipal.blit(txt_surface, (input_box.x+5, input_box.y+10))
+        input_box.w = max(300, txt_surface.get_width()+10)
+        mouse = pygame.mouse.get_pos()
+        cor_botao = botao_hover if botao_rect.collidepoint(mouse) else botao_color
+        pygame.draw.rect(telaPrincipal, cor_botao, botao_rect)
+        botao_txt = fonte2.render("Iniciar Jogo", True, preto)
+        telaPrincipal.blit(botao_txt, (botao_rect.x + (150-botao_txt.get_width())//2, botao_rect.y + 10))
+        pygame.display.flip()
+        relogio.tick(60)
+    return nome
+
+
+def tela_intro(nome):
+    fonte = pygame.font.Font(None, 48)
+    fonte2 = pygame.font.Font(None, 32)
+    historia = [
+        "Em um universo distante, você é o último piloto",
+        "capaz de salvar a galáxia dos invasores cósmicos.",
+        "",
+        "Controles: Use as setas para mover e S para atirar.",
+        "",
+        "Prepare-se!"
+    ]
+    timer = 10
+    last_tick = time.time()
+    # Fala o nome
+    speak(f"Bem vindo {nome}")
+    rodando = True
+    while rodando:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+        telaPrincipal.blit(fundoJogo, (-120, 10))
+        titulo = fonte.render(f"Bem-vindo ao Space Looker, {nome}!", True, branco)
+        telaPrincipal.blit(titulo, (tela[0]//2 - titulo.get_width()//2, 80))
+        for i, linha in enumerate(historia):
+            texto = fonte2.render(linha, True, branco)
+            telaPrincipal.blit(texto, (tela[0]//2 - texto.get_width()//2, 200 + i*40))
+        timer_txt = fonte2.render(f"O jogo começa em {timer} segundos...", True, branco)
+        telaPrincipal.blit(timer_txt, (tela[0]//2 - timer_txt.get_width()//2, tela[1] - 100))
+        pygame.display.flip()
+        if time.time() - last_tick >= 1:
+            timer -= 1
+            last_tick = time.time()
+        if timer <= 0:
+            rodando = False
+        relogio.tick(60)
+
+# ====== FIM DAS NOVAS FUNÇÕES ======
+
+# ====== INÍCIO DO JOGO ======
+nome_jogador = tela_inicio()
+tela_intro(nome_jogador)
+
+# ...existing code...
 
 # Posição e movimento da nave
 posicaoXNave = 20
@@ -97,7 +233,7 @@ while True:
             if ast['x'] < -55:
                 ast['x'] = 1000
                 ast['y'] = random.randint(0, 645)
-                velocidadeAsteroide += 0.1  
+                velocidadeAsteroide += 0.1
 
         # Move os tiros e remove os que saíram da tela
         for t in tiros[:]:
@@ -143,7 +279,7 @@ while True:
             if tiro_rect.colliderect(asteroide_rect):
                 tiros.remove(t)
                 ast['x'] = 1000
-                ast['y'] = random.randint(0, 645)
+                ast['y'] = random.randint(0, 675)
                 pontuacao += 1
                 break  # Um tiro só pode destruir um asteroide por vez
 
@@ -197,4 +333,4 @@ while True:
         telaPrincipal.blit(texto2, texto2_rect)
 
     pygame.display.update()
-    relogio.tick(60)
+    relogio.tick(120)
