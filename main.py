@@ -1,18 +1,10 @@
-import os
-import pygame
-import datetime
-import random
-import pyttsx3  # ADICIONADO PARA VOZ
-import time     # ADICIONADO PARA TIMER
-import threading
-import speech_recognition as sr
-import pickle
+import os, pygame, datetime, random, time, threading
+from recursos.funcoes import speak, salvar_partida, ler_ultimas_partidas, reconhecer_nome
 
 #Git push origin main
 #global dá pra puxar em qualquer lugar do código
 
 pygame.init()
-
 pygame.display.set_caption("Space Looker")
 fundoJogo = pygame.image.load("imagens/fundoJogo.jpg")
 nave = pygame.image.load("imagens/nave.png")
@@ -31,62 +23,9 @@ roxo = (200, 0, 128)
 cinza = (192, 192, 192)
 vermelho = (255, 0, 0)
 pygame.mixer.music.load("imagens/fundoCerto.mp3")
-pygame.mixer.music.play(-1, 0, 1000000)  # Fade in da música de fundo
-
-
-# ====== NOVAS FUNÇÕES E VARIÁVEIS ======
-def speak(text):
-    try:
-        engine = pyttsx3.init()
-        engine.setProperty('rate', 150)
-        engine.say(text)
-        engine.runAndWait()
-    except Exception as e:
-        print("Erro ao falar:", e)
-
-
+pygame.mixer.music.play(-1, 0, 1000000)  
 
 LOG_PATH = "log.dat"
-
-def salvar_partida(pontuacao):
-    partida = {
-        "pontuacao": pontuacao,
-        "datahora": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-    }
-    partidas = []
-    if os.path.exists(LOG_PATH):
-        with open(LOG_PATH, "rb") as f:
-            try:
-                partidas = pickle.load(f)
-            except:
-                partidas = []
-    partidas.insert(0, partida)  # Adiciona no início
-    partidas = partidas[:5]      # Mantém só as 5 últimas
-    with open(LOG_PATH, "wb") as f:
-        pickle.dump(partidas, f)
-
-def ler_ultimas_partidas():
-    if not os.path.exists(LOG_PATH):
-        return []
-    with open(LOG_PATH, "rb") as f:
-        try:
-            return pickle.load(f)
-        except:
-            return []
-
-
-def reconhecer_nome():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        try:
-            print("Diga seu nome...")
-            audio = r.listen(source, timeout=5)
-            nome = r.recognize_google(audio, language='pt-BR')
-            print("Você disse:", nome)
-            return nome
-        except Exception as e:
-            print("Não entendi. Tente novamente.", e)
-            return ""
 
 def tela_inicio():
     fonte = pygame.font.Font(None, 110)  
@@ -100,7 +39,6 @@ def tela_inicio():
     botao_rect = pygame.Rect(tela[0]//2 - 75, tela[1]//2 + 80, 150, 50)
     botao_color = (128, 0, 180)
     botao_hover = (255, 255, 255)
-    # Botão de fala
     botao_fala_rect = pygame.Rect(tela[0]//2 - 75, tela[1]//2 + 150, 150, 50)
     rodando = True
     nome = ''
@@ -138,12 +76,10 @@ def tela_inicio():
 
         telaPrincipal.blit(fundoJogo, (0, 0))
 
-        # Fade transparente
         fade = pygame.Surface(tela, pygame.SRCALPHA)
         fade.fill((0, 0, 0, 180))
         telaPrincipal.blit(fade, (0, 0))
 
-        # Pisca o título
         blink_timer += relogio.get_time()
         if blink_timer > blink_interval:
             blink = not blink
@@ -166,16 +102,13 @@ def tela_inicio():
         pygame.draw.rect(telaPrincipal, cor_botao, botao_rect)
         botao_txt = fonte2.render("Iniciar Jogo", True, preto)
         telaPrincipal.blit(botao_txt, (botao_rect.x + (150-botao_txt.get_width())//2, botao_rect.y + 10))
-        # Botão de fala
         cor_botao_fala = botao_hover if botao_fala_rect.collidepoint(mouse) else botao_color
         pygame.draw.rect(telaPrincipal, cor_botao_fala, botao_fala_rect)
-        botao_fala_txt = fonte2.render("Falar nome 🎤", True, preto)
+        botao_fala_txt = fonte2.render("Falar nome", True, preto)
         telaPrincipal.blit(botao_fala_txt, (botao_fala_rect.x + (150-botao_fala_txt.get_width())//2, botao_fala_rect.y + 10))
         pygame.display.flip()
         relogio.tick(60)
     return nome
-
-# ...existing code...
 
 def tela_intro(nome):
     fonte = pygame.font.Font(None, 48)
@@ -190,7 +123,6 @@ def tela_intro(nome):
     ]
     timer = 10
     last_tick = time.time()
-    # Fala o nome
     speak(f"Bem vindo {nome}")
 
     rodando = True
@@ -202,11 +134,9 @@ def tela_intro(nome):
 
         telaPrincipal.blit(fundoJogo, (-120, 10))
 
-        # --- FADE TRANSPARENTE SOBRE O FUNDO ---
         fade = pygame.Surface(tela, pygame.SRCALPHA)
-        fade.fill((0, 0, 0, 180))  # Preto com alpha 180 (0=transparente, 255=opaco)
+        fade.fill((0, 0, 0, 180))  
         telaPrincipal.blit(fade, (0, 0))
-        # ---------------------------------------
 
         titulo = fonte.render(f"Bem-vindo ao Space Looker, {nome}!", True, roxo)
         telaPrincipal.blit(titulo, (tela[0]//2 - titulo.get_width()//2, 80))
@@ -223,10 +153,8 @@ def tela_intro(nome):
             rodando = False
         relogio.tick(60)
 
-# ...existing code...
-
-def tela_morte(pontuacao):
-    salvar_partida(pontuacao)
+def tela_morte(pontuacao, nome_jogador):
+    salvar_partida(pontuacao, nome_jogador)
     ultimas = ler_ultimas_partidas()
     fonte = pygame.font.Font(None, 60)
     fonte2 = pygame.font.Font(None, 36)
@@ -239,10 +167,10 @@ def tela_morte(pontuacao):
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
-                    rodando = False  # Sai da tela de morte (encerra o jogo)
+                    rodando = False
                 if event.key == pygame.K_SPACE:
                     voltar_inicio = True
-                    rodando = False  # Sai da tela de morte para voltar ao início
+                    rodando = False
 
         telaPrincipal.blit(fundoJogo, (0, 0))
         fade = pygame.Surface(tela, pygame.SRCALPHA)
@@ -251,7 +179,7 @@ def tela_morte(pontuacao):
 
         texto = fonte.render("VOCÊ MORREU!", True, (255, 0, 0))
         telaPrincipal.blit(texto, (tela[0]//2 - texto.get_width()//2, 80))
-        texto2 = fonte2.render(f"Sua pontuação: {pontuacao}", True, branco)
+        texto2 = fonte2.render(f"{nome_jogador} - Sua pontuação: {pontuacao}", True, branco)
         telaPrincipal.blit(texto2, (tela[0]//2 - texto2.get_width()//2, 180))
 
         texto3 = fonte2.render("Últimas 5 partidas:", True, branco)
@@ -259,7 +187,7 @@ def tela_morte(pontuacao):
 
         for i, partida in enumerate(ultimas):
             linha = fonte2.render(
-                f"{i+1}. {partida['pontuacao']} pontos - {partida['datahora']}",
+                f"{i+1}. {partida.get('nome','?')} - {partida['pontuacao']} pontos - {partida['datahora']}",
                 True, branco
             )
             telaPrincipal.blit(linha, (tela[0]//2 - linha.get_width()//2, 300 + i*40))
@@ -274,23 +202,31 @@ def tela_morte(pontuacao):
         relogio.tick(60)
     return voltar_inicio
 
-# ...existing code...
+decorativo_pos = [random.randint(100, 900), random.randint(100, 600)]
+decorativo_vel = [random.choice([-1, 1]) * random.uniform(0.5, 1.5), random.choice([-1, 1]) * random.uniform(0.5, 1.5)]
+decorativo_raio = 18
+decorativo_cor = (roxo)  
 
-# ====== INÍCIO DO JOGO ======
+
+sol_pos = (80, 80)  
+sol_raio_base = 40
+sol_raio = sol_raio_base
+sol_pulse_direcao = 1  
+sol_pulse_vel = 0.3   
+
 while True:
+    global nome_jogador
     nome_jogador = tela_inicio()
     tela_intro(nome_jogador)
 
-    # Posição e movimento da nave
     posicaoXNave = 20
     posicaoYNave = 350
     movimentoXNave = 0
     movimentoYNave = 0
 
     velocidadeTiro = 20
-    tiros = []  # Lista de tiros ativos
+    tiros = [] 
 
-    # Múltiplos asteroides
     NUM_ASTEROIDES = 10
     asteroides = []
     for _ in range(NUM_ASTEROIDES):
@@ -298,7 +234,6 @@ while True:
         y = random.randint(0, 645)
         asteroides.append({'x': x, 'y': y})
 
-    # Variáveis do jogo
     pausado = False
     pontuacao = 0
     fonteHora = pygame.font.Font(None, 20)
@@ -306,18 +241,16 @@ while True:
 
     jogando = True
     while jogando:
-        # --- Seção de Eventos ---
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 exit()
 
-            # Evento de pausar o jogo
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
                 pausado = not pausado
                 movimentoYNave = 0
 
-            # Eventos de movimento (apenas se não estiver pausado)
             if not pausado:
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_UP:
@@ -329,7 +262,6 @@ while True:
                     if evento.key == pygame.K_UP or evento.key == pygame.K_DOWN:
                         movimentoYNave = 0
 
-                # Disparo do tiro
                 if evento.type == pygame.KEYDOWN:
                     if evento.key == pygame.K_s:
                         tiros.append({
@@ -337,13 +269,10 @@ while True:
                             'y': posicaoYNave + nave.get_height() // 2 - tiro.get_height() // 2
                         })
 
-        # --- Seção de Lógica do Jogo ---
         if not pausado:
-            # Atualiza a posição da nave
             posicaoXNave += movimentoXNave
             posicaoYNave += movimentoYNave
 
-            # Limita o movimento da nave na tela
             if posicaoXNave <= 20:
                 posicaoXNave = 20
             elif posicaoXNave >= 855:
@@ -354,7 +283,6 @@ while True:
             elif posicaoYNave >= 580:
                 posicaoYNave = 580
 
-            # Move e reposiciona asteroides
             for ast in asteroides:
                 ast['x'] -= velocidadeAsteroide
                 if ast['x'] < -55:
@@ -362,13 +290,21 @@ while True:
                     ast['y'] = random.randint(0, 645)
                     velocidadeAsteroide += 0.1
 
-            # Move os tiros e remove os que saíram da tela
             for t in tiros[:]:
                 t['x'] += velocidadeTiro
                 if t['x'] > tela[0]:
                     tiros.remove(t)
 
-        # --- Seção de Colisão ---
+            decorativo_pos[0] += decorativo_vel[0]
+            decorativo_pos[1] += decorativo_vel[1]
+
+            if decorativo_pos[0] < decorativo_raio or decorativo_pos[0] > tela[0] - decorativo_raio:
+                decorativo_vel[0] *= -1
+                decorativo_pos[0] = max(decorativo_raio, min(tela[0] - decorativo_raio, decorativo_pos[0]))
+            if decorativo_pos[1] < decorativo_raio or decorativo_pos[1] > tela[1] - decorativo_raio:
+                decorativo_vel[1] *= -1
+                decorativo_pos[1] = max(decorativo_raio, min(tela[1] - decorativo_raio, decorativo_pos[1]))
+
         nave_rect = pygame.Rect(
             posicaoXNave + 8,
             posicaoYNave + 12,
@@ -376,7 +312,6 @@ while True:
             nave.get_height() - 20
         )
 
-        # CORRIGIDO: checa colisão para cada asteroide individualmente
         for ast in asteroides:
             asteroide_rect = pygame.Rect(
                 ast['x'] + 8,
@@ -385,15 +320,14 @@ while True:
                 escalaAsteroide.get_height() - 16
             )
             if nave_rect.colliderect(asteroide_rect):
-                voltar_inicio = tela_morte(pontuacao)
+                voltar_inicio = tela_morte(pontuacao, nome_jogador)
                 if voltar_inicio:
-                    jogando = False  # Sai do loop do jogo e volta para o início
+                    jogando = False  
                 else:
                     pygame.quit()
                     exit()
-                break  # Sai do loop de colisão
+                break 
 
-        # --- Colisão tiro x asteroide e pontuação ---
         for t in tiros[:]:
             tiro_rect = pygame.Rect(
                 t['x'],
@@ -414,40 +348,47 @@ while True:
                     ast['y'] = random.randint(0, 675)
                     pontuacao += 1
                     threading.Thread(target=speak, args=(f"{pontuacao} pontos",)).start()
-                    break  # Um tiro só pode destruir um asteroide por vez
+                    break 
 
-        # --- Seção de Desenho na Tela ---
         telaPrincipal.blit(fundoJogo, (-120, 10))
         telaPrincipal.blit(nave, (posicaoXNave, posicaoYNave))
 
-        # Desenha os tiros
+        pygame.draw.circle(
+            telaPrincipal,
+            (255, 255, 0),
+            sol_pos,
+            int(sol_raio)
+        )
+        sol_raio += sol_pulse_direcao * sol_pulse_vel
+        if sol_raio > sol_raio_base + 10:
+            sol_pulse_direcao = -1
+        elif sol_raio < sol_raio_base - 10:
+            sol_pulse_direcao = 1
+
+        pygame.draw.circle(
+            telaPrincipal,
+            decorativo_cor,
+            (int(decorativo_pos[0]), int(decorativo_pos[1])),
+            decorativo_raio
+        )
+
         for t in tiros:
             telaPrincipal.blit(tiro, (t['x'], t['y']))
 
-        pontuacao_texto = fontePontuacao.render(f"Pontos: {pontuacao}", True, branco)
+        pontuacao_texto = fontePontuacao.render(f"{nome_jogador} - Pontos: {pontuacao}", True, branco)
         telaPrincipal.blit(pontuacao_texto, (10, 40))
 
-        # Desenha os asteroides
         for ast in asteroides:
             telaPrincipal.blit(escalaAsteroide, (ast['x'], ast['y']))
 
-        # Se quiser visualizar as hitboxes, descomente abaixo:
-        # pygame.draw.rect(telaPrincipal, (0,255,0), nave_rect, 2)
-        # for ast in asteroides:
-        #     asteroide_rect = pygame.Rect(
-        #         ast['x'] + 8,
-        #         ast['y'] + 8,
-        #         escalaAsteroide.get_width() - 16,
-        #         escalaAsteroide.get_height() - 16
-        #     )
-        #     pygame.draw.rect(telaPrincipal, (255,0,0), asteroide_rect, 2)
-
-        # Atualiza e desenha a hora a cada quadro
         hora_atual = datetime.datetime.now().strftime("%d/%m/%y %H:%M:%S")
         texto_hora = fonteHora.render(hora_atual, True, branco)
         telaPrincipal.blit(texto_hora, (10, 10))
 
-        # Desenha a tela de Pause se o jogo estiver pausado
+        fontePause = pygame.font.Font(None, 18)
+        texto_pause = fontePause.render("Press Space to Pause Game.", True, branco)
+        telaPrincipal.blit(texto_pause, (10 + texto_hora.get_width() + 10, 12))
+
         if pausado:
             s = pygame.Surface(tela, pygame.SRCALPHA)
             s.fill((0, 0, 0, 180))
@@ -466,4 +407,4 @@ while True:
             telaPrincipal.blit(texto2, texto2_rect)
 
         pygame.display.update()
-        relogio.tick(120)
+        relogio.tick(60)
