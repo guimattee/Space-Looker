@@ -1,5 +1,5 @@
 import os, pygame, datetime, random, time, threading
-from recursos.funcoes import speak, salvar_partida, ler_ultimas_partidas, reconhecer_nome
+from recursos.defs import speak, salvar_partida, ler_ultimas_partidas, reconhecer_nome
 
 #Git push origin main
 #global dá pra puxar em qualquer lugar do código
