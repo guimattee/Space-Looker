@@ -5,6 +5,9 @@ import pyttsx3  # ADICIONADO PARA VOZ
 import time     # ADICIONADO PARA TIMER
 import threading
 
+#Git push origin main
+#global dá pra puxar em qualquer lugar do código
+
 pygame.init()
 
 pygame.display.set_caption("Space Looker")
@@ -141,6 +144,7 @@ def tela_intro(nome):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+
         telaPrincipal.blit(fundoJogo, (-120, 10))
 
         # --- FADE TRANSPARENTE SOBRE O FUNDO ---
@@ -278,7 +282,7 @@ while True:
         if nave_rect.colliderect(asteroide_rect):
             print("Você foi atingido por um asteroide!")
             pygame.quit()
-            exit()
+            exit() #MUdar pra tela de game over
 
     # --- Colisão tiro x asteroide e pontuação ---
     for t in tiros[:]:
