@@ -26,7 +26,7 @@ O jogo incorpora várias bibliotecas modernas para aprimorar a experiência do u
 #### Jogabilidade 👾:
 
 * **Tela Inicial:** Ao iniciar o jogo, você será solicitado a inserir seu nome. Você pode digitá-lo ou pressionar o botão "Falar nome" para usar o reconhecimento de voz.
-* **Introdução:** Após definir seu nome, uma breve introdução à história e aos controles é exibida, juntamente com uma contagem regressiva de 10 segundos para o início do jogo.
+* **Introdução:** Após definir seu nome, uma breve introdução à história e aos controles é exibida, juntamente com um botão para o início do jogo.
 * **Objetivo:** O objetivo principal é destruir o maior número possível de asteroides para acumular pontos. Cada asteroide destruído concede um ponto.
 * **Game Over:** O jogo termina se sua nave colidir com um asteroide. A tela final exibirá sua pontuação e as pontuações das últimas cinco partidas. A partir desta tela, você pode optar por sair do jogo ou retornar à tela inicial para jogar novamente.
 
