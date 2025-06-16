@@ -32,7 +32,7 @@ O jogo incorpora várias bibliotecas modernas para aprimorar a experiência do u
 
 ---
 
-### Dependências
+### Dependências ⚠️:
 Para rodar este jogo, você precisará do Python e das seguintes bibliotecas:
 
 * `pygame`
