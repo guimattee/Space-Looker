@@ -1,5 +1,5 @@
 # Space Looper 🚀☄️
-### Sobre o projeto
+### Sobre o projeto 📝
 O Space Looker é um projeto acadêmico desenvolvido por Guilherme Matte Embarach (RA: 1137953). O jogo foi criado como requisito para uma disciplina, utilizando a biblioteca pygame para construir uma experiência de tiro espacial (space shooter).
 Neste jogo, o jogador assume o papel do último piloto com a missão de salvar a galáxia de invasores cósmicos.
 
