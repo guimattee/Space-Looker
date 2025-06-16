@@ -43,9 +43,9 @@ Para rodar este jogo, você precisará do Python e das seguintes bibliotecas:
 * `time`
 * `threading`
 
-Elas podem ser instaladas via pip:
+### Elas podem ser instaladas via pip:
 
 ```bash
 pip install pygame pyttsx3 SpeechRecognition
-
-Testado por Pedro Henrique Piccoli Franceschi (RA: 1137855)
+```
+# Testado por Pedro Henrique Piccoli Franceschi (RA: 1137855)
