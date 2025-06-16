@@ -23,7 +23,7 @@ roxo = (200, 0, 128)
 cinza = (192, 192, 192)
 vermelho = (255, 0, 0)
 pygame.mixer.music.load("imagens/trilhaSonora.mp3")
-pygame.mixer.music.play(-1, 0, 1000000)
+#pygame.mixer.music.play(-1, 0, 100000)
 
 LOG_PATH = "log.dat"
 
@@ -111,6 +111,7 @@ def tela_inicio():
     return nome
 
 def tela_intro(nome):
+    pygame.mixer.music.play(-1, 0, 100000)
     fonte = pygame.font.Font(None, 48)
     fonte2 = pygame.font.Font(None, 32)
     historia = [
