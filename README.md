@@ -47,3 +47,5 @@ Elas podem ser instaladas via pip:
 
 ```bash
 pip install pygame pyttsx3 SpeechRecognition
+
+Testado por Pedro Henrique Piccoli Franceschi (RA: 1137855)
