@@ -15,6 +15,7 @@ O jogo incorpora várias bibliotecas modernas para aprimorar a experiência do u
 
   
 Como Jogar: 
+
 Controles
 Mover: Use as setas PARA CIMA e PARA BAIXO para navegar sua nave espacial.
 Atirar: Pressione a tecla S para disparar projéteis nos asteroides.
