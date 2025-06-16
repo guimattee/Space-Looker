@@ -1,4 +1,4 @@
-import os, pygame, datetime, random, time, threading
+import pygame, datetime, random, time, threading
 from recursos.defs import speak, salvar_partida, ler_ultimas_partidas, reconhecer_nome
 
 #Git push origin main
@@ -22,8 +22,8 @@ branco = (255, 255, 255)
 roxo = (200, 0, 128)
 cinza = (192, 192, 192)
 vermelho = (255, 0, 0)
-pygame.mixer.music.load("imagens/fundoCerto.mp3")
-pygame.mixer.music.play(-1, 0, 1000000)  
+pygame.mixer.music.load("imagens/trilhaSonora.mp3")
+pygame.mixer.music.play(-1, 0, 1000000)
 
 LOG_PATH = "log.dat"
 
@@ -44,7 +44,7 @@ def tela_inicio():
     nome = ''
     blink = True
     blink_timer = 0
-    blink_interval = 1000  # ms
+    blink_interval = 800  # ms
 
     while rodando:
         for event in pygame.event.get():
@@ -121,9 +121,11 @@ def tela_intro(nome):
         "",
         "Prepare-se!"
     ]
-    timer = 10
-    last_tick = time.time()
     speak(f"Bem vindo {nome}")
+
+    botao_rect = pygame.Rect(tela[0]//2 - 100, tela[1] - 120, 200, 60)
+    botao_color = (128, 0, 180)
+    botao_hover = (255, 255, 255)
 
     rodando = True
     while rodando:
@@ -131,6 +133,9 @@ def tela_intro(nome):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if botao_rect.collidepoint(event.pos):
+                    rodando = False
 
         telaPrincipal.blit(fundoJogo, (-120, 10))
 
@@ -143,15 +148,15 @@ def tela_intro(nome):
         for i, linha in enumerate(historia):
             texto = fonte2.render(linha, True, branco)
             telaPrincipal.blit(texto, (tela[0]//2 - texto.get_width()//2, 200 + i*40))
-        timer_txt = fonte2.render(f"O jogo começa em {timer} segundos...", True, vermelho)
-        telaPrincipal.blit(timer_txt, (tela[0]//2 - timer_txt.get_width()//2, tela[1] - 100))
+
+        mouse = pygame.mouse.get_pos()
+        cor_botao = botao_hover if botao_rect.collidepoint(mouse) else botao_color
+        pygame.draw.rect(telaPrincipal, cor_botao, botao_rect)
+        botao_txt = fonte2.render("Continuar", True, preto)
+        telaPrincipal.blit(botao_txt, (botao_rect.x + (200-botao_txt.get_width())//2, botao_rect.y + 10))
         pygame.display.flip()
-        if time.time() - last_tick >= 1:
-            timer -= 1
-            last_tick = time.time()
-        if timer <= 0:
-            rodando = False
         relogio.tick(60)
+    return
 
 def tela_morte(pontuacao, nome_jogador):
     salvar_partida(pontuacao, nome_jogador)
