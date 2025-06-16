@@ -12,7 +12,7 @@ O jogo incorpora várias bibliotecas modernas para aprimorar a experiência do u
 * Persistência de Pontuação: O jogo salva as últimas cinco sessões, incluindo nome do jogador, pontuação e data/hora da partida. Essas informações são exibidas na tela de "Game Over".
 * Jogabilidade Dinâmica: A velocidade dos asteroides aumenta progressivamente à medida que o jogo avança, oferecendo um desafio crescente.
 * Funcionalidade de Pausa: Os jogadores podem pausar e retomar o jogo a qualquer momento.
-- Como Jogar
+Como Jogar: 
 Controles
 Mover: Use as setas PARA CIMA e PARA BAIXO para navegar sua nave espacial.
 Atirar: Pressione a tecla S para disparar projéteis nos asteroides.
@@ -25,14 +25,13 @@ Game Over: O jogo termina se sua nave colidir com um asteroide. A tela final exi
 Dependências
 Para rodar este jogo, você precisará do Python e das seguintes bibliotecas:
 
-pygame
-pyttsx3
-SpeechRecognition
-pickle
-datetime
-os
-time
-threading
+* pygame
+* pyttsx3
+* SpeechRecognition
+* pickle
+* datetime
+* time
+* threading
 Elas podem ser instaladas via pip:
 
 Bash
