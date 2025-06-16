@@ -12,6 +12,8 @@ O jogo incorpora várias bibliotecas modernas para aprimorar a experiência do u
 * Persistência de Pontuação: O jogo salva as últimas cinco sessões, incluindo nome do jogador, pontuação e data/hora da partida. Essas informações são exibidas na tela de "Game Over".
 * Jogabilidade Dinâmica: A velocidade dos asteroides aumenta progressivamente à medida que o jogo avança, oferecendo um desafio crescente.
 * Funcionalidade de Pausa: Os jogadores podem pausar e retomar o jogo a qualquer momento.
+
+  
 Como Jogar: 
 Controles
 Mover: Use as setas PARA CIMA e PARA BAIXO para navegar sua nave espacial.
