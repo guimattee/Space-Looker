@@ -48,4 +48,5 @@ Para rodar este jogo, você precisará do Python e das seguintes bibliotecas:
 ```bash
 pip install pygame pyttsx3 SpeechRecognition
 ```
+---
 # Testado por Pedro Henrique Piccoli Franceschi (RA: 1137855)
